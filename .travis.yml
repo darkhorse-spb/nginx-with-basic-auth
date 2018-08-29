@@ -1,7 +1,9 @@
-sudo: required
+#sudo: required
 
 services:
   - docker
 
 script:
+  - env
+  - docker pull nginx:alpine
   - docker build -t nginx-basic-auth .
