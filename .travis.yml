@@ -4,5 +4,15 @@ services:
   - docker
 
 script:
+  - env
   - docker pull nginx:alpine
   - docker build -t nginx-basic-auth .
+  
+ after_success:
+  - echo "Test Success - Branch($TRAVIS_BRANCH) Pull Request($TRAVIS_PULL_REQUEST) Tag($TRAVIS_TAG)"
+  - if [[ "$TRAVIS_BRANCH" == "master" ]]; then echo -e "Push Container to Docker Hub"; fi
+  - docker login -e=$DOCKER_EMAIL -u=$DOCKER_USERNAME -p=$DOCKER_PASSWORD
+  - export REPO=darkhorse-spb/nginx-with-basic-auth
+  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+  - docker tag nginx-basic-auth $REPO:$TAG
+  - docker push $REPO:$TAG
